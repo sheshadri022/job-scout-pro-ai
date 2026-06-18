@@ -12,6 +12,26 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 
 
 // ─── PDF Text Extraction (zero-dependency, Node.js built-ins only) ─────────────
 
+/**
+ * ASCII85 decode — handles streams produced by ReportLab and other generators that
+ * use /Filter [/ASCII85Decode /FlateDecode].  ASCII85 streams end with the `~>` marker.
+ */
+function decodeASCII85(input: Buffer): Buffer {
+  const data = input.toString("binary").replace(/\s/g, "").replace(/~>$/, "");
+  const result: number[] = [];
+  let i = 0;
+  while (i < data.length) {
+    if (data[i] === "z") { result.push(0, 0, 0, 0); i++; continue; }
+    const rem = Math.min(5, data.length - i);
+    let val = 0;
+    for (let j = 0; j < 5; j++) val = val * 85 + (j < rem ? data.charCodeAt(i + j) - 33 : 84);
+    const b = [(val >>> 24) & 0xff, (val >>> 16) & 0xff, (val >>> 8) & 0xff, val & 0xff];
+    for (let k = 0; k < rem - 1; k++) result.push(b[k]);
+    i += rem;
+  }
+  return Buffer.from(result);
+}
+
 /** Decode a hex string from a PDF <...> token into readable text. */
 function decodeHexString(hex: string): string {
   const clean = hex.replace(/\s/g, "");
@@ -105,14 +125,29 @@ export function extractTextFromPdf(buffer: Buffer): string {
   const bytes = buffer.toString("binary");
   let text = "";
 
-  const streamPattern = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+  // Note: some generators (e.g. ReportLab) emit the stream body ending with `~>`
+  // immediately followed by `endstream` (no preceding newline). The `(?:\r?\n)?`
+  // makes that newline optional so the regex matches both variants.
+  const streamPattern = /stream\r?\n([\s\S]*?)(?:\r?\n)?endstream/g;
   let streamMatch: RegExpExecArray | null;
 
   while ((streamMatch = streamPattern.exec(bytes)) !== null) {
     const raw = Buffer.from(streamMatch[1], "binary");
     let decoded: Buffer | null = null;
 
-    try { decoded = inflateSync(raw); } catch { /* not zlib */ }
+    // Detect ASCII85 encoding by the `~>` end-of-data marker.
+    // ReportLab uses /Filter [/ASCII85Decode /FlateDecode]: ASCII85 wraps compressed data.
+    const rawTrimmed = raw.toString("binary").trimEnd();
+    if (rawTrimmed.endsWith("~>")) {
+      try {
+        const a85 = decodeASCII85(raw);
+        try { decoded = inflateSync(a85); } catch { /* might not be compressed after a85 */ }
+        if (!decoded) { try { decoded = inflateRawSync(a85); } catch { /* not raw deflate */ } }
+        if (!decoded) decoded = a85; // ASCII85 only, no compression
+      } catch { /* fall through to plain zlib */ }
+    }
+
+    if (!decoded) { try { decoded = inflateSync(raw); } catch { /* not zlib */ } }
     if (!decoded) { try { decoded = inflateRawSync(raw); } catch { /* not raw deflate */ } }
     if (!decoded) decoded = raw;  // uncompressed
 

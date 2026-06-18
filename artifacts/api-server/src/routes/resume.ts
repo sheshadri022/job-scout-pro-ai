@@ -1,5 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
+// Import from the internal lib path — the package index.js reads a test PDF
+// on load which breaks outside the package directory; the lib module skips that.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfParse: (buf: Buffer) => Promise<{ text: string }> = require("pdf-parse/lib/pdf-parse.js");
 import { db, resumesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
@@ -134,10 +138,6 @@ router.post("/resume/upload-pdf", requireAuth, upload.single("resume"), async (r
   }
 
   try {
-    // Dynamically import pdf-parse to handle CJS compatibility
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pdfMod = await import("pdf-parse") as any;
-    const pdfParse = pdfMod.default ?? pdfMod;
     const data = await pdfParse(req.file.buffer);
     const rawText = data.text.trim();
 

@@ -1,0 +1,353 @@
+You are a Senior Product Architect, Senior Full-Stack Engineer, DevOps Engineer, AI Engineer, and Database Architect.
+
+Build a production-ready SaaS application called:
+
+🚀 Job Scout Pro AI
+
+My Goal:
+I want a personal AI-powered job hunting platform that helps me discover jobs, analyze my resume, rank opportunities, generate personalized application content, track applications, and assist me in applying efficiently.
+
+IMPORTANT:
+- I am a complete beginner in web development.
+- Explain every major step clearly.
+- Make architecture decisions yourself.
+- Build everything professionally as if it will be used by thousands of users.
+- Continue implementing without stopping after every small task.
+
+====================================================
+TECH STACK (MANDATORY)
+====================================================
+
+Frontend:
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- ShadCN UI
+
+Backend:
+- Node.js
+- Express.js
+- TypeScript
+
+Database:
+- Supabase PostgreSQL
+
+Authentication:
+- Supabase Auth
+
+AI:
+- OpenAI API
+- Read key from environment variable:
+  OPENAI_API_KEY
+
+Hosting:
+- Render.com
+
+====================================================
+ENVIRONMENT VARIABLES
+====================================================
+
+Use these environment variables:
+
+OPENAI_API_KEY
+SUPABASE_URL
+SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+DATABASE_URL
+SESSION_SECRET
+
+Never hardcode any credentials.
+
+Show clear errors if any variable is missing.
+
+====================================================
+CORE FEATURES
+====================================================
+
+1. Authentication
+- Supabase Signup
+- Supabase Login
+- Protected Routes
+- Session Management
+- User Profile
+
+2. Resume Management
+- Upload PDF Resume
+- Upload DOCX Resume
+- Parse Resume Automatically
+- Extract:
+  - Skills
+  - Experience
+  - Education
+  - Certifications
+  - Projects
+  - Technologies
+  - Keywords
+
+Store all extracted information in Supabase.
+
+3. User Preferences
+Allow user to configure:
+- Preferred Roles
+- Preferred Locations
+- Remote / Hybrid / Onsite
+- Salary Expectations
+- Years of Experience
+- Preferred Industries
+
+4. Job Discovery Engine
+Create a system that can:
+
+- Import job URLs manually
+- Import company career page URLs
+- Save job descriptions
+- Save company details
+
+Create reusable architecture for future job-source integrations.
+
+IMPORTANT:
+Do NOT implement illegal scraping.
+Do NOT bypass login systems.
+Do NOT bypass CAPTCHA.
+Do NOT violate platform terms of service.
+
+5. AI Job Matching
+For every job:
+
+Generate:
+- Match Score (0-100)
+- ATS Score
+- Skills Match
+- Missing Skills
+- Missing Keywords
+- Experience Gap Analysis
+- Resume Improvement Suggestions
+
+Store all analysis results.
+
+6. AI Application Assistant
+
+Generate:
+
+- Tailored Cover Letter
+- Recruiter Message
+- Application Summary
+- Interview Preparation Questions
+- Resume Improvement Suggestions
+
+7. Application Tracker
+
+Statuses:
+- Saved
+- To Apply
+- Applied
+- Interview Scheduled
+- Interview Completed
+- Rejected
+- Offer Received
+- Accepted
+
+Track complete application history.
+
+8. Dashboard
+
+Display:
+
+- Total Jobs
+- High Match Jobs
+- Applications Sent
+- Interviews Scheduled
+- Offers Received
+
+Add charts and statistics.
+
+9. Search and Filters
+
+Filter by:
+- Match Score
+- Company
+- Location
+- Role
+- Application Status
+- Date Added
+
+====================================================
+DATABASE DESIGN
+====================================================
+
+Use Supabase PostgreSQL.
+
+Generate complete schema.
+
+Create tables:
+
+profiles
+resumes
+jobs
+job_scores
+applications
+generated_messages
+user_settings
+
+Create:
+- Foreign Keys
+- Indexes
+- Constraints
+- Audit Timestamps
+
+Generate complete SQL migration scripts.
+
+====================================================
+UI/UX REQUIREMENTS
+====================================================
+
+Create a modern SaaS UI.
+
+Pages:
+
+- Landing Page
+- Login
+- Signup
+- Dashboard
+- Resume Manager
+- Job Discovery
+- Job Details
+- AI Analysis
+- Application Tracker
+- Settings
+
+Requirements:
+
+- Responsive Design
+- Mobile Friendly
+- Loading States
+- Error States
+- Empty States
+- Toast Notifications
+- Dark Mode Support
+
+====================================================
+SUPABASE INTEGRATION
+====================================================
+
+Replace any Replit database usage.
+
+Use only Supabase.
+
+Generate:
+
+1. Supabase SQL schema
+2. Supabase client configuration
+3. Auth integration
+4. API integration
+5. Storage integration for resumes
+
+====================================================
+RENDER DEPLOYMENT
+====================================================
+
+This application will be hosted on Render.
+
+Prepare:
+
+- Production build setup
+- Environment variable setup
+- Render deployment configuration
+- Start command
+- Build command
+
+Generate all deployment instructions.
+
+====================================================
+IMPORTANT SECURITY REQUIREMENTS
+====================================================
+
+- Secure authentication
+- Input validation
+- Rate limiting
+- Proper error handling
+- Environment variable validation
+- Secure API design
+
+====================================================
+WORKFLOW
+====================================================
+
+Do NOT stop after planning.
+
+Perform the following automatically:
+
+Step 1:
+Analyze existing codebase.
+
+Step 2:
+Create architecture.
+
+Step 3:
+Create folder structure.
+
+Step 4:
+Generate Supabase schema.
+
+Step 5:
+Configure Supabase integration.
+
+Step 6:
+Replace Clerk with Supabase Auth.
+
+Step 7:
+Build backend APIs.
+
+Step 8:
+Build frontend pages.
+
+Step 9:
+Build AI services.
+
+Step 10:
+Build dashboard.
+
+Step 11:
+Build application tracker.
+
+Step 12:
+Prepare Render deployment.
+
+Step 13:
+Provide final setup checklist.
+
+====================================================
+ACCOUNT ACCESS POLICY
+====================================================
+
+Do NOT ask for my passwords.
+
+Do NOT ask for direct account access.
+
+Instead:
+
+- Tell me exactly which Supabase values to copy.
+- Tell me exactly which Render values to copy.
+- Tell me exactly which environment variables to add.
+
+Guide me step-by-step when external configuration is needed.
+
+====================================================
+FINAL REQUIREMENT
+====================================================
+
+Continue implementing the application from the current checkpoint.
+
+Refactor any existing code that uses:
+- Clerk
+- Replit Database
+- Replit-specific integrations
+
+and migrate everything to:
+
+- Supabase Auth
+- Supabase PostgreSQL
+- OpenAI API
+- Render.com deployment
+
+Start implementation now and keep building until the application is fully scaffolded and production-ready.

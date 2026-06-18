@@ -39,7 +39,7 @@ router.post("/ai/cover-letter", requireAuth, async (req, res) => {
     if (!resume) { res.status(400).json({ error: "Upload your resume first" }); return; }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
+      model: "gpt-4o-mini",
       max_completion_tokens: 2048,
       messages: [
         {
@@ -83,7 +83,7 @@ router.post("/ai/recruiter-message", requireAuth, async (req, res) => {
     if (!resume) { res.status(400).json({ error: "Upload your resume first" }); return; }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 512,
       messages: [
         {
@@ -119,7 +119,7 @@ router.post("/ai/resume-tips", requireAuth, async (req, res) => {
     if (!resume) { res.status(400).json({ error: "Upload your resume first" }); return; }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 1024,
       messages: [
         {
@@ -156,7 +156,7 @@ router.post("/ai/interview-prep", requireAuth, async (req, res) => {
     if (!resume) { res.status(400).json({ error: "Upload your resume first" }); return; }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 1024,
       messages: [
         {

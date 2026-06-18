@@ -55,7 +55,7 @@ router.post("/applications", requireAuth, async (req, res) => {
 
 // PATCH /api/applications/:id
 router.patch("/applications/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(String(req.params.id));
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const parsed = UpdateApplicationBody.safeParse(req.body);

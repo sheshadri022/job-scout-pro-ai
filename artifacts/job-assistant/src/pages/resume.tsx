@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   useGetResume, 
   useUploadResume,
@@ -18,12 +18,11 @@ export default function Resume() {
   const [rawText, setRawText] = useState(resume?.rawText || "");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Sync state when data loads
-  useState(() => {
+  useEffect(() => {
     if (resume?.rawText) {
       setRawText(resume.rawText);
     }
-  });
+  }, [resume?.rawText]);
 
   const handleSave = () => {
     if (rawText.length < 50) {

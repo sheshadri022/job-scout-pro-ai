@@ -71,7 +71,7 @@ router.post("/jobs", requireAuth, async (req, res) => {
 
 // GET /api/jobs/:id
 router.get("/jobs/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(String(req.params.id));
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   try {
@@ -91,7 +91,7 @@ router.get("/jobs/:id", requireAuth, async (req, res) => {
 
 // PATCH /api/jobs/:id
 router.patch("/jobs/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(String(req.params.id));
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const parsed = UpdateJobBody.safeParse(req.body);
@@ -114,7 +114,7 @@ router.patch("/jobs/:id", requireAuth, async (req, res) => {
 
 // DELETE /api/jobs/:id
 router.delete("/jobs/:id", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(String(req.params.id));
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   try {
@@ -130,7 +130,7 @@ router.delete("/jobs/:id", requireAuth, async (req, res) => {
 
 // POST /api/jobs/:id/score — AI-powered match scoring
 router.post("/jobs/:id/score", requireAuth, async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = parseInt(String(req.params.id));
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   try {
@@ -154,7 +154,7 @@ router.post("/jobs/:id/score", requireAuth, async (req, res) => {
     }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 2048,
       messages: [
         {

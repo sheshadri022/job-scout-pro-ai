@@ -40,7 +40,7 @@ router.post("/resume", requireAuth, async (req, res) => {
   try {
     // Use AI to parse the resume into structured sections
     const completion = await openai.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "gpt-4o-mini",
       max_completion_tokens: 4096,
       messages: [
         {

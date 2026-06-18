@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import {
   useGetResume,
   useUploadResume,
-  getGetResumeQueryKey
+  getGetResumeQueryKey,
+  getGetProfileQueryKey,
 } from "@workspace/api-client-react";
 import { queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,9 @@ export default function Resume() {
       {
         onSuccess: (updatedResume) => {
           queryClient.setQueryData(getGetResumeQueryKey(), updatedResume);
+          queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
           setIsEditing(false);
-          toast.success("Resume saved and parsed by AI");
+          toast.success("Resume saved — Career Preferences updated from your resume!");
         },
         onError: () => toast.error("Failed to save resume"),
       }
@@ -70,7 +72,12 @@ export default function Resume() {
       queryClient.setQueryData(getGetResumeQueryKey(), updatedResume);
       setRawText(updatedResume.rawText || "");
       setIsEditing(false);
-      toast.success("PDF uploaded and parsed by AI");
+      if (updatedResume._careerUpdated) {
+        await queryClient.invalidateQueries({ queryKey: getGetProfileQueryKey() });
+        toast.success("PDF uploaded — Career Preferences auto-updated from your resume!");
+      } else {
+        toast.success("PDF uploaded and parsed by AI");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "PDF upload failed");
     } finally {

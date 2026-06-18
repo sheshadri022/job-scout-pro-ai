@@ -3,7 +3,7 @@ import { db, resumesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 import { UploadResumeBody } from "@workspace/api-zod";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { openai } from "../lib/openai";
 
 const router = Router();
 

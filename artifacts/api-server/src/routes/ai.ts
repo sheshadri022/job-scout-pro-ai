@@ -8,7 +8,7 @@ import {
   GenerateResumeTipsBody,
   GenerateInterviewPrepBody,
 } from "@workspace/api-zod";
-import { openai } from "@workspace/integrations-openai-ai-server";
+import { openai } from "../lib/openai";
 
 const router = Router();
 

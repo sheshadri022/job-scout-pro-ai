@@ -1,22 +1,33 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Job Scout Pro AI API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: profile
+    description: User profile and preferences
+  - name: resume
+    description: Resume management
+  - name: jobs
+    description: Job management
+  - name: applications
+    description: Application tracking
+  - name: ai
+    description: AI generation endpoints
+  - name: dashboard
+    description: Dashboard summary endpoints
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +35,374 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── Profile ──────────────────────────────────────────────────────────────────
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Not found
+    put:
+      operationId: upsertProfile
+      tags: [profile]
+      summary: Create or update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  # ── Resume ───────────────────────────────────────────────────────────────────
+  /resume:
+    get:
+      operationId: getResume
+      tags: [resume]
+      summary: Get the current user's resume
+      responses:
+        "200":
+          description: Resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+        "404":
+          description: Not found
+    post:
+      operationId: uploadResume
+      tags: [resume]
+      summary: Upload and parse resume text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeInput"
+      responses:
+        "200":
+          description: Parsed resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+
+  # ── Jobs ─────────────────────────────────────────────────────────────────────
+  /jobs:
+    get:
+      operationId: listJobs
+      tags: [jobs]
+      summary: List all jobs for the current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: minScore
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+    post:
+      operationId: createJob
+      tags: [jobs]
+      summary: Add a job manually
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobInput"
+      responses:
+        "201":
+          description: Created job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      tags: [jobs]
+      summary: Get a single job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateJob
+      tags: [jobs]
+      summary: Update a job (status, notes, etc.)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobUpdate"
+      responses:
+        "200":
+          description: Updated job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+    delete:
+      operationId: deleteJob
+      tags: [jobs]
+      summary: Delete a job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /jobs/{id}/score:
+    post:
+      operationId: scoreJob
+      tags: [jobs]
+      summary: Run AI match scoring for a job against the user's resume
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Job score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobScore"
+
+  # ── Applications ─────────────────────────────────────────────────────────────
+  /applications:
+    get:
+      operationId: listApplications
+      tags: [applications]
+      summary: List all applications
+      responses:
+        "200":
+          description: List of applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+    post:
+      operationId: createApplication
+      tags: [applications]
+      summary: Record a manual application submission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Created application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}:
+    patch:
+      operationId: updateApplication
+      tags: [applications]
+      summary: Update application status or notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationUpdate"
+      responses:
+        "200":
+          description: Updated application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  # ── AI Generation ────────────────────────────────────────────────────────────
+  /ai/cover-letter:
+    post:
+      operationId: generateCoverLetter
+      tags: [ai]
+      summary: Generate a tailored cover letter for a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+      responses:
+        "200":
+          description: Generated cover letter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedContent"
+
+  /ai/recruiter-message:
+    post:
+      operationId: generateRecruiterMessage
+      tags: [ai]
+      summary: Generate a short recruiter outreach message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+      responses:
+        "200":
+          description: Generated recruiter message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedContent"
+
+  /ai/resume-tips:
+    post:
+      operationId: generateResumeTips
+      tags: [ai]
+      summary: Generate resume improvement suggestions for a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+      responses:
+        "200":
+          description: Resume tips
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedContent"
+
+  /ai/interview-prep:
+    post:
+      operationId: generateInterviewPrep
+      tags: [ai]
+      summary: Generate interview preparation questions for a job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateRequest"
+      responses:
+        "200":
+          description: Interview prep questions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedContent"
+
+  # ── Dashboard ─────────────────────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard stats summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/recent-jobs:
+    get:
+      operationId: getRecentJobs
+      tags: [dashboard]
+      summary: Get recently added jobs
+      responses:
+        "200":
+          description: Recent jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+
+  /dashboard/top-matches:
+    get:
+      operationId: getTopMatches
+      tags: [dashboard]
+      summary: Get top-scored job matches
+      responses:
+        "200":
+          description: Top matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +410,275 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    # ── Profile ─────────────────────────────────────────────────────────────────
+    Profile:
+      type: object
+      required: [id, userId, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        fullName:
+          type: ["string", "null"]
+        preferredRoles:
+          type: array
+          items:
+            type: string
+        preferredLocations:
+          type: array
+          items:
+            type: string
+        expectedSalaryMin:
+          type: ["integer", "null"]
+        expectedSalaryMax:
+          type: ["integer", "null"]
+        workMode:
+          type: ["string", "null"]
+          enum: ["remote", "hybrid", "onsite", null]
+        createdAt:
+          type: string
+        updatedAt:
+          type: ["string", "null"]
+
+    ProfileInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+        preferredRoles:
+          type: array
+          items:
+            type: string
+        preferredLocations:
+          type: array
+          items:
+            type: string
+        expectedSalaryMin:
+          type: integer
+        expectedSalaryMax:
+          type: integer
+        workMode:
+          type: string
+          enum: ["remote", "hybrid", "onsite"]
+
+    # ── Resume ──────────────────────────────────────────────────────────────────
+    Resume:
+      type: object
+      required: [id, userId, rawText, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        rawText:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        experience:
+          type: array
+          items:
+            type: string
+        education:
+          type: array
+          items:
+            type: string
+        certifications:
+          type: array
+          items:
+            type: string
+        projects:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: ["string", "null"]
+
+    ResumeInput:
+      type: object
+      required: [rawText]
+      properties:
+        rawText:
+          type: string
+          minLength: 50
+
+    # ── Job ─────────────────────────────────────────────────────────────────────
+    Job:
+      type: object
+      required: [id, userId, title, company, status, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: string
+        title:
+          type: string
+        company:
+          type: string
+        location:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        url:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: ["saved", "to_apply", "applied", "rejected", "interview", "offer"]
+        notes:
+          type: ["string", "null"]
+        score:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: ["string", "null"]
+
+    JobInput:
+      type: object
+      required: [title, company]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        company:
+          type: string
+          minLength: 1
+        location:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        notes:
+          type: string
+
+    JobUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        status:
+          type: string
+          enum: ["saved", "to_apply", "applied", "rejected", "interview", "offer"]
+        notes:
+          type: string
+
+    # ── Job Score ───────────────────────────────────────────────────────────────
+    JobScore:
+      type: object
+      required: [id, jobId, score, createdAt]
+      properties:
+        id:
+          type: integer
+        jobId:
+          type: integer
+        score:
+          type: integer
+        matchingSkills:
+          type: array
+          items:
+            type: string
+        missingSkills:
+          type: array
+          items:
+            type: string
+        experienceGap:
+          type: ["string", "null"]
+        atsScore:
+          type: ["integer", "null"]
+        missingKeywords:
+          type: array
+          items:
+            type: string
+        reasoning:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    # ── Application ─────────────────────────────────────────────────────────────
+    Application:
+      type: object
+      required: [id, jobId, userId, appliedAt]
+      properties:
+        id:
+          type: integer
+        jobId:
+          type: integer
+        userId:
+          type: string
+        coverLetter:
+          type: ["string", "null"]
+        recruiterMessage:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        appliedAt:
+          type: string
+
+    ApplicationInput:
+      type: object
+      required: [jobId]
+      properties:
+        jobId:
+          type: integer
+        coverLetter:
+          type: string
+        recruiterMessage:
+          type: string
+        notes:
+          type: string
+
+    ApplicationUpdate:
+      type: object
+      properties:
+        notes:
+          type: string
+
+    # ── AI Generation ───────────────────────────────────────────────────────────
+    GenerateRequest:
+      type: object
+      required: [jobId]
+      properties:
+        jobId:
+          type: integer
+
+    GeneratedContent:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    # ── Dashboard ───────────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [totalJobs, highMatchJobs, appliedJobs, interviewJobs, offerJobs, savedJobs]
+      properties:
+        totalJobs:
+          type: integer
+        highMatchJobs:
+          type: integer
+        appliedJobs:
+          type: integer
+        interviewJobs:
+          type: integer
+        offerJobs:
+          type: integer
+        savedJobs:
+          type: integer
+        averageScore:
+          type: ["number", "null"]

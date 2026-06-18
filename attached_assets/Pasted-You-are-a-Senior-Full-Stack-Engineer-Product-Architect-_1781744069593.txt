@@ -1,0 +1,137 @@
+You are a Senior Full Stack Engineer, Product Architect, and AI Engineer.
+
+Build a production-ready SaaS application called "Job Scout Pro AI".
+
+Goal:
+The application should automatically collect jobs from legal job sources, analyze my resume, rank jobs, generate personalized applications, and help me apply efficiently.
+
+Tech Stack:
+Frontend:
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- ShadCN UI
+
+Backend:
+- Node.js
+- Express
+- TypeScript
+
+Database:
+- Supabase PostgreSQL
+
+Authentication:
+- Supabase Auth
+
+Hosting:
+- Render.com
+
+AI:
+- OpenAI API (configurable)
+
+Features:
+
+1. Resume Management
+- Upload PDF/DOCX resume
+- Extract:
+  - Skills
+  - Experience
+  - Education
+  - Certifications
+  - Projects
+- Store in database
+
+2. Job Discovery Engine
+- Support importing jobs from:
+  - LinkedIn job URLs
+  - Indeed URLs
+  - Naukri URLs
+  - Company career page URLs
+- User can paste URLs manually
+- Store job details
+
+3. AI Job Matching
+For each job:
+- Match score 0-100
+- Skill gap analysis
+- Experience gap analysis
+- ATS compatibility score
+- Missing keywords
+
+4. AI Assistant
+Generate:
+- Tailored cover letter
+- Recruiter message
+- Interview preparation questions
+- Resume improvement suggestions
+
+5. Dashboard
+Show:
+- Total jobs analyzed
+- High match jobs
+- Applied jobs
+- Rejected jobs
+- Interview jobs
+
+6. Job Tracking
+Status:
+- Saved
+- To Apply
+- Applied
+- Rejected
+- Interview
+- Offer
+
+7. Search and Filters
+Filter by:
+- Score
+- Company
+- Location
+- Role
+- Experience
+
+8. User Settings
+- Preferred locations
+- Preferred job titles
+- Salary expectations
+- Work mode:
+  - Remote
+  - Hybrid
+  - Onsite
+
+Database Design:
+Create complete Supabase schema with:
+- users
+- resumes
+- jobs
+- job_scores
+- applications
+- settings
+
+Requirements:
+- Production-ready architecture
+- Responsive design
+- Clean code
+- Comments everywhere
+- Environment variables
+- Error handling
+- Loading states
+- Toast notifications
+
+Deployment:
+Provide:
+- Supabase setup steps
+- Render deployment steps
+- Environment variables list
+
+Important:
+Do NOT implement bot-based mass applying.
+Do NOT bypass login systems, CAPTCHA, or website restrictions.
+Only build legal job discovery, scoring, tracking, and application preparation workflows.
+
+First generate:
+1. System architecture
+2. Database schema
+3. Folder structure
+4. API design
+5. Then start coding

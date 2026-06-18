@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "AI Job Assistant"
+version = "1.0.0"
+id = "artifacts/job-assistant"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18975
+
+[services.development]
+run = "pnpm --filter @workspace/job-assistant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/job-assistant", "run", "build" ]
+publicDir = "artifacts/job-assistant/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18975"
+BASE_PATH = "/"

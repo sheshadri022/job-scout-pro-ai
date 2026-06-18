@@ -1,0 +1,71 @@
+I am a beginner and I want you to build a web app step by step.
+
+App idea:
+Build a personal AI job application assistant. It should NOT spam job portals or bypass any portal rules. It should help me find suitable jobs, score them against my resume, prepare application drafts, and let me manually review/apply.
+
+Tech stack:
+- Frontend + Backend: Next.js or React with Node.js
+- Hosting: Render.com
+- Database: Supabase
+- Authentication: Supabase Auth
+- AI: OpenAI API or any configurable LLM API
+- File upload: Resume PDF/DOC upload
+
+Core features:
+1. User login/signup using Supabase Auth.
+2. Resume upload and parsing.
+3. Save extracted resume details:
+   - skills
+   - experience
+   - education
+   - projects
+   - preferred roles
+   - preferred locations
+   - expected salary
+4. Job source module:
+   - Allow me to manually add job links.
+   - Add support for job APIs/RSS feeds where legally available.
+   - Do not scrape sites that block scraping or require bypassing login/CAPTCHA.
+5. Job matching:
+   - Compare each job description with my resume.
+   - Generate match score out of 100.
+   - Show matching skills, missing skills, and reason for score.
+6. Dashboard:
+   - List all jobs.
+   - Filters: score, company, role, location, status.
+   - Status: Saved, Reviewed, Applied, Rejected, Interview.
+7. AI application assistant:
+   - Generate tailored cover letter.
+   - Generate short recruiter message.
+   - Suggest resume keywords to improve match.
+8. Manual apply workflow:
+   - Show “Apply Link” button.
+   - I will manually submit applications.
+   - Store application history.
+9. Admin/settings page:
+   - Add/edit resume details.
+   - Add preferred job roles and locations.
+   - Configure AI API key safely using environment variables.
+
+Database:
+Design Supabase tables for:
+- users/profile
+- resumes
+- jobs
+- job_scores
+- applications
+- generated_messages
+
+Important requirements:
+- Explain every step because I am new to web app development.
+- First create the project structure.
+- Then create database schema.
+- Then build frontend pages.
+- Then build backend APIs.
+- Then explain how to deploy on Render.
+- Use clean, beginner-friendly code.
+- Add comments in the code.
+- Do not hardcode API keys.
+- Provide setup instructions for Supabase and Render.
+
+Start by creating the complete project plan and folder structure, then generate the code step by step.

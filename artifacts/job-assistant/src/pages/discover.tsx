@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 import {
@@ -64,9 +64,10 @@ export default function Discover() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [queue, setQueue] = useState<Queue>({});
   const [syncing, setSyncing] = useState<string | null>(null);
-  const [queueLoading, setQueueLoading] = useState(false);
-  const [loadedOnce, setLoadedOnce] = useState(false);
+  const [queueLoading, setQueueLoading] = useState(true);
+  const [warmingUp, setWarmingUp] = useState(false);
   const [actioning, setActioning] = useState<number | null>(null);
+  const initializedRef = useRef(false);
 
   const apiBase = import.meta.env.VITE_API_URL || "";
 
@@ -87,25 +88,40 @@ export default function Discover() {
     return res.json();
   }
 
+  async function apiFetchWithRetry(path: string, options?: RequestInit, maxAttempts = 4): Promise<unknown> {
+    let lastErr: unknown;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        return await apiFetch(path, options);
+      } catch (err) {
+        lastErr = err;
+        if (attempt === maxAttempts - 1) break;
+        if (attempt === 0) setWarmingUp(true);
+        await new Promise(r => setTimeout(r, Math.min(2000 * (attempt + 1), 8000)));
+      }
+    }
+    throw lastErr;
+  }
+
   async function loadProviders() {
     try {
       const data = await apiFetch("/api/discover/providers");
-      setProviders(data);
+      setProviders(data as Provider[]);
     } catch {
-      toast.error("Failed to load providers");
+      // Non-critical — providers list will stay empty
     }
   }
 
-  async function loadQueue() {
+  async function loadQueue(showToastOnFail = false) {
     setQueueLoading(true);
     try {
-      const data = await apiFetch("/api/discover/queue");
+      const data = await apiFetchWithRetry("/api/discover/queue") as Queue;
       setQueue(data);
-      setLoadedOnce(true);
     } catch {
-      toast.error("Failed to load queue");
+      if (showToastOnFail) toast.error("Failed to load queue");
     } finally {
       setQueueLoading(false);
+      setWarmingUp(false);
     }
   }
 
@@ -115,9 +131,9 @@ export default function Discover() {
       const result = await apiFetch("/api/discover/sync", {
         method: "POST",
         body: JSON.stringify({ provider: providerName, limit: 20 }),
-      });
+      }) as { provider: string; saved: number };
       toast.success(`${result.provider}: ${result.saved} new jobs found`);
-      await loadQueue();
+      await loadQueue(true);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Sync failed");
     } finally {
@@ -162,10 +178,13 @@ export default function Discover() {
     }
   }
 
-  // Load on mount
-  if (!loadedOnce && !queueLoading && providers.length === 0) {
-    loadProviders().then(() => loadQueue());
-  }
+  useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    loadProviders();
+    loadQueue();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const totalPending = Object.values(queue).reduce((acc, jobs) => acc + jobs.length, 0);
 
@@ -183,7 +202,7 @@ export default function Discover() {
           </p>
         </div>
         <Button
-          onClick={loadQueue}
+          onClick={() => loadQueue(true)}
           disabled={queueLoading}
           variant="outline"
           className="border-white/15 text-white/70 hover:bg-white/5 hover:text-white"
@@ -264,7 +283,14 @@ export default function Discover() {
         {queueLoading ? (
           <div className="glass-card p-12 text-center">
             <Loader2 className="w-8 h-8 animate-spin text-blue-400 mx-auto mb-3" />
-            <p className="text-white/45 text-sm">Loading queue…</p>
+            {warmingUp ? (
+              <>
+                <p className="text-white/60 text-sm font-medium">Server warming up…</p>
+                <p className="text-white/30 text-xs mt-1">Free tier spins down after inactivity. Ready in ~15s.</p>
+              </>
+            ) : (
+              <p className="text-white/45 text-sm">Loading queue…</p>
+            )}
           </div>
         ) : totalPending === 0 ? (
           <div className="glass-card p-12 text-center space-y-3">

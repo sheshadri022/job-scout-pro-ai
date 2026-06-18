@@ -1,5 +1,7 @@
 services:
   # ── API Server (Express + Drizzle + Supabase Auth) ──────────────────────────
+  # Service ID: srv-d8plf6rsq97s7387fkn0
+  # URL: https://job-scout-api-723v.onrender.com
   - type: web
     name: job-scout-api
     runtime: node
@@ -13,20 +15,23 @@ services:
         value: production
       - key: PORT
         value: "10000"
-      - key: DATABASE_URL
-        sync: false          # paste your Supabase connection string in Render dashboard
       - key: SUPABASE_URL
-        sync: false
+        value: https://qvznbxqyjtivgcldckoo.supabase.co
+      - key: DATABASE_URL
+        sync: false          # Supabase PostgreSQL connection string
+      - key: SUPABASE_DATABASE_URL
+        sync: false          # Same as DATABASE_URL — Supabase PostgreSQL
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
       - key: OPENAI_API_KEY
         sync: false
 
   # ── Frontend (Vite static site) ──────────────────────────────────────────────
+  # Service ID: srv-d8plfli8qa3s73bvk5h0
+  # URL: https://job-scout-frontend-42i7.onrender.com
   - type: web
     name: job-scout-frontend
     runtime: static
-    region: oregon
     plan: free
     buildCommand: "npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/job-assistant run build"
     staticPublishPath: artifacts/job-assistant/dist
@@ -40,8 +45,8 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_SUPABASE_URL
-        sync: false
+        value: https://qvznbxqyjtivgcldckoo.supabase.co
       - key: VITE_SUPABASE_ANON_KEY
         sync: false
       - key: VITE_API_URL
-        sync: false          # e.g. https://job-scout-api.onrender.com
+        value: https://job-scout-api-723v.onrender.com

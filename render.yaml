@@ -1,0 +1,47 @@
+services:
+  # ── API Server (Express + Drizzle + Supabase Auth) ──────────────────────────
+  - type: web
+    name: job-scout-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: "npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build"
+    startCommand: "node --enable-source-maps artifacts/api-server/dist/index.mjs"
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: DATABASE_URL
+        sync: false          # paste your Supabase connection string in Render dashboard
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+  # ── Frontend (Vite static site) ──────────────────────────────────────────────
+  - type: web
+    name: job-scout-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: "npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/job-assistant run build"
+    staticPublishPath: artifacts/job-assistant/dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: "no-cache"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: VITE_API_URL
+        sync: false          # e.g. https://job-scout-api.onrender.com

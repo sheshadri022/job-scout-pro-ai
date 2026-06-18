@@ -1,16 +1,16 @@
 import { Link, useLocation } from "wouter";
-import { useClerk, useUser } from "@clerk/react";
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  FileText, 
-  Settings, 
+import { useAuth } from "@/contexts/auth";
+import {
+  LayoutDashboard,
+  Briefcase,
+  FileText,
+  Settings,
   LogOut,
   User as UserIcon,
   ClipboardCheck,
-  Menu
+  Menu,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,8 +24,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { user } = useUser();
-  const { signOut } = useClerk();
+  const { user, signOut } = useAuth();
+  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -35,7 +35,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const email = user?.email ?? "";
+  const initials = email.slice(0, 2).toUpperCase();
 
   const NavLinks = () => (
     <>
@@ -46,12 +47,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             key={item.name}
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
-              isActive 
-                ? "bg-primary text-primary-foreground font-medium shadow-sm" 
+              isActive
+                ? "bg-primary text-primary-foreground font-medium shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
-            <item.icon className={`w-5 h-5 ${isActive ? "text-primary-foreground" : "text-slate-500"}`} />
+            <item.icon
+              className={`w-5 h-5 ${isActive ? "text-primary-foreground" : "text-slate-500"}`}
+            />
             {item.name}
           </Link>
         );
@@ -99,19 +102,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="p-4 border-t border-slate-200">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start gap-3 px-2 h-auto py-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-3 px-2 h-auto py-2"
+              >
                 <Avatar className="w-8 h-8">
-                  <AvatarImage src={user?.imageUrl} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    <UserIcon className="w-4 h-4" />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                    {initials || <UserIcon className="w-4 h-4" />}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start text-sm">
                   <span className="font-medium text-slate-900 truncate w-32">
-                    {user?.fullName || "User"}
-                  </span>
-                  <span className="text-xs text-slate-500 truncate w-32">
-                    {user?.primaryEmailAddress?.emailAddress}
+                    {email || "User"}
                   </span>
                 </div>
               </Button>
@@ -120,13 +122,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/settings" className="cursor-pointer flex items-center">
+                <Link
+                  href="/settings"
+                  className="cursor-pointer flex items-center"
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => signOut({ redirectUrl: basePath || "/" })}
+              <DropdownMenuItem
+                onClick={() =>
+                  signOut().then(() => {
+                    window.location.href = basePath || "/";
+                  })
+                }
                 className="text-red-600 focus:text-red-600 cursor-pointer"
               >
                 <LogOut className="mr-2 h-4 w-4" />
@@ -139,9 +148,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <main className="flex-1 md:pl-64 flex flex-col">
-        <div className="flex-1 p-4 md:p-8">
-          {children}
-        </div>
+        <div className="flex-1 p-4 md:p-8">{children}</div>
       </main>
     </div>
   );

@@ -1,0 +1,2 @@
+- [Supabase auth migration](supabase-auth.md) — replaced Clerk with Supabase Auth; auth flow, env var names, and JWT verification pattern.
+- [Render deployment](render-deployment.md) — render.yaml structure, two-service setup (API web service + static frontend), critical env vars.

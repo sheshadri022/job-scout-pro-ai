@@ -1,7 +1,6 @@
-import { getAuth } from "@clerk/express";
 import type { Request, Response, NextFunction } from "express";
+import { getSupabaseClient } from "./supabase";
 
-// Extend Request to carry userId after auth check
 declare global {
   namespace Express {
     interface Request {
@@ -10,14 +9,30 @@ declare global {
   }
 }
 
-// Middleware: require a valid Clerk session on protected routes
-export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-  const auth = getAuth(req);
-  const userId = (auth?.sessionClaims?.userId as string) || auth?.userId;
-  if (!userId) {
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  req.userId = userId;
+
+  const token = authHeader.slice(7);
+
+  let supabase;
+  try {
+    supabase = getSupabaseClient();
+  } catch {
+    res.status(503).json({ error: "Auth not configured — set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY" });
+    return;
+  }
+
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+
+  if (error || !user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  req.userId = user.id;
   next();
 };

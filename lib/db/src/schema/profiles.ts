@@ -11,6 +11,8 @@ export const profilesTable = pgTable("profiles", {
   expectedSalaryMin: integer("expected_salary_min"),
   expectedSalaryMax: integer("expected_salary_max"),
   workMode: text("work_mode"),
+  scoreThreshold: integer("score_threshold").notNull().default(70),
+  rapidApiKey: text("rapid_api_key"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at"),
 });

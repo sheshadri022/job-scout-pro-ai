@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Briefcase, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 
 export default function SignIn() {
   const [, setLocation] = useLocation();
@@ -27,21 +27,22 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <div className="flex items-center gap-2 text-primary font-bold text-2xl">
-            <Briefcase className="w-7 h-7" />
-            Job Scout Pro AI
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-semibold text-slate-900">Sign in to your account</h1>
-          <p className="text-sm text-slate-500">Welcome back! Please enter your details.</p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white">Job Scout Pro AI</h1>
+            <p className="text-sm text-white/45 mt-1">Sign in to your account</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
+        <div className="glass-card p-6 space-y-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white/60 text-xs uppercase tracking-wide">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -50,10 +51,11 @@ export default function SignIn() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                className="bg-white/5 border-white/12 text-white placeholder:text-white/25 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-white/60 text-xs uppercase tracking-wide">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -62,24 +64,25 @@ export default function SignIn() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
+                className="bg-white/5 border-white/12 text-white placeholder:text-white/25 focus:border-blue-500/50"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
                 {error}
               </p>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full btn-gradient" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign in
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-slate-500">
+          <p className="text-center text-sm text-white/40">
             Don&apos;t have an account?{" "}
-            <Link href="/sign-up" className="text-primary font-medium hover:underline">
+            <Link href="/sign-up" className="text-blue-400 font-medium hover:text-blue-300 hover:underline">
               Sign up
             </Link>
           </p>

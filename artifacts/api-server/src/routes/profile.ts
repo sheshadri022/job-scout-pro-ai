@@ -35,6 +35,12 @@ router.put("/profile", requireAuth, async (req, res) => {
   }
   const data = parsed.data;
 
+  // Pull extra fields that codegen may not include in Zod schema yet
+  const extra: Record<string, unknown> = {};
+  const body = req.body as Record<string, unknown>;
+  if (typeof body["scoreThreshold"] === "number") extra["scoreThreshold"] = body["scoreThreshold"];
+  if (typeof body["rapidApiKey"] === "string") extra["rapidApiKey"] = body["rapidApiKey"] || null;
+
   try {
     const existing = await db
       .select()
@@ -45,14 +51,14 @@ router.put("/profile", requireAuth, async (req, res) => {
     if (existing.length > 0) {
       const [updated] = await db
         .update(profilesTable)
-        .set({ ...data, updatedAt: new Date() })
+        .set({ ...data, ...extra, updatedAt: new Date() })
         .where(eq(profilesTable.userId, req.userId!))
         .returning();
       res.json(updated);
     } else {
       const [created] = await db
         .insert(profilesTable)
-        .values({ userId: req.userId!, ...data })
+        .values({ userId: req.userId!, ...data, ...extra })
         .returning();
       res.json(created);
     }

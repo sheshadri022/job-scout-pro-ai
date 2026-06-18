@@ -438,6 +438,10 @@ components:
         workMode:
           type: ["string", "null"]
           enum: ["remote", "hybrid", "onsite", null]
+        scoreThreshold:
+          type: integer
+        rapidApiKey:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -463,6 +467,12 @@ components:
         workMode:
           type: string
           enum: ["remote", "hybrid", "onsite"]
+        scoreThreshold:
+          type: integer
+          minimum: 0
+          maximum: 100
+        rapidApiKey:
+          type: string
 
     # ── Resume ──────────────────────────────────────────────────────────────────
     Resume:
@@ -534,6 +544,12 @@ components:
           type: ["string", "null"]
         score:
           type: ["integer", "null"]
+        source:
+          type: string
+        externalId:
+          type: ["string", "null"]
+        reviewStatus:
+          type: string
         createdAt:
           type: string
         updatedAt:

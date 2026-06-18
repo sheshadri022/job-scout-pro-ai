@@ -6,6 +6,7 @@ import jobsRouter from "./jobs";
 import applicationsRouter from "./applications";
 import aiRouter from "./ai";
 import dashboardRouter from "./dashboard";
+import discoverRouter from "./discover";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(jobsRouter);
 router.use(applicationsRouter);
 router.use(aiRouter);
 router.use(dashboardRouter);
+router.use(discoverRouter);
 
 export default router;

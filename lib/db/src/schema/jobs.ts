@@ -13,6 +13,9 @@ export const jobsTable = pgTable("jobs", {
   status: text("status").notNull().default("saved"),
   notes: text("notes"),
   score: integer("score"),
+  source: text("source").notNull().default("manual"),
+  externalId: text("external_id"),
+  reviewStatus: text("review_status").notNull().default("none"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at"),
 });

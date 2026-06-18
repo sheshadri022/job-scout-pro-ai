@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Briefcase, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, CheckCircle2 } from "lucide-react";
 
 export default function SignUp() {
   const [, setLocation] = useLocation();
@@ -30,36 +30,36 @@ export default function SignUp() {
     } else if (data.session) {
       setLocation("/dashboard");
     } else {
-      setVerifyMsg("Check your email for a confirmation link before signing in.");
+      setVerifyMsg("Account created! You can sign in now.");
     }
   };
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <div className="flex items-center gap-2 text-primary font-bold text-2xl">
-            <Briefcase className="w-7 h-7" />
-            Job Scout Pro AI
+        <div className="flex flex-col items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-semibold text-slate-900">Create your account</h1>
-          <p className="text-sm text-slate-500">Start scouting smarter today.</p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white">Create your account</h1>
+            <p className="text-sm text-white/45 mt-1">Start scouting smarter today</p>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
+        <div className="glass-card p-6 space-y-5">
           {verifyMsg ? (
-            <div className="text-center space-y-4">
-              <p className="text-sm text-slate-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-3">
-                {verifyMsg}
-              </p>
-              <Link href="/sign-in" className="text-primary font-medium hover:underline text-sm">
-                Back to sign in
+            <div className="text-center space-y-4 py-4">
+              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+              <p className="text-sm text-white/70">{verifyMsg}</p>
+              <Link href="/sign-in">
+                <Button className="btn-gradient w-full">Sign in now</Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-white/60 text-xs uppercase tracking-wide">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -68,10 +68,11 @@ export default function SignUp() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
+                  className="bg-white/5 border-white/12 text-white placeholder:text-white/25 focus:border-blue-500/50"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-white/60 text-xs uppercase tracking-wide">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -81,10 +82,11 @@ export default function SignUp() {
                   required
                   autoComplete="new-password"
                   minLength={6}
+                  className="bg-white/5 border-white/12 text-white placeholder:text-white/25 focus:border-blue-500/50"
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="confirm">Confirm password</Label>
+                <Label htmlFor="confirm" className="text-white/60 text-xs uppercase tracking-wide">Confirm password</Label>
                 <Input
                   id="confirm"
                   type="password"
@@ -93,16 +95,17 @@ export default function SignUp() {
                   onChange={(e) => setConfirm(e.target.value)}
                   required
                   autoComplete="new-password"
+                  className="bg-white/5 border-white/12 text-white placeholder:text-white/25 focus:border-blue-500/50"
                 />
               </div>
 
               {error && (
-                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">
                   {error}
                 </p>
               )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full btn-gradient" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create account
               </Button>
@@ -110,9 +113,9 @@ export default function SignUp() {
           )}
 
           {!verifyMsg && (
-            <p className="mt-4 text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-white/40">
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-primary font-medium hover:underline">
+              <Link href="/sign-in" className="text-blue-400 font-medium hover:text-blue-300 hover:underline">
                 Sign in
               </Link>
             </p>
